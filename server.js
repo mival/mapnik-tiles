@@ -107,8 +107,8 @@ var mapRenderQueue = async.queue(function(options, callback) {
     }
     return mkdirp(path.dirname(options.fileName), {}).then(function() {
 
-      var map = new mapnik.Map(options.tileWidth, options.tileHeight);
-      return map.load(options.stylesheet, { strict: true }, function(err) {
+      var mapnikMap = new mapnik.Map(options.tileWidth, options.tileHeight, '+init=epsg:3857');
+      return mapnikMap.load(options.stylesheet, { }, function(err, map) {
         if (err) {
           return callback(err);
         }
