@@ -85,7 +85,6 @@ function start(options) {
     job.fileName = path.join(options.cachedir, '' + job.zoom, '' + job.tileX, '' + job.tileY + ".png");
     return mapRenderQueue.push(job, function(err, results) {
       if (err) {
-        console.error("error", req.url, err);
         res.writeHead(500);
         return res.end();
       }
@@ -100,16 +99,13 @@ function start(options) {
 }
 
 var mapRenderQueue = async.queue(function(options, callback) {
-  return fs.exists(options.fileName, function(exists) {
-    if (exists) {
-      return callback(null, options);
-    }
-    return mkdirp(path.dirname(options.fileName), {}).then(function(err) {
-      if (err) {
-        return callback(err);
+  return fs.open(options.fileName, 'wx', (err, fd) => {
+    if (err) {
+      if (err.code === 'EEXIST') {
+        return callback(null, options);
       }
-
-      console.log(path.dirname(options.fileName))
+    }
+    return mkdirp(path.dirname(options.fileName), {}).then(function() {
 
       var map = new mapnik.Map(options.tileWidth, options.tileHeight);
       return map.load(options.stylesheet, { strict: true }, function(err) {
@@ -145,13 +141,25 @@ var mapRenderQueue = async.queue(function(options, callback) {
         map.zoomToBox(c0[0], c0[1], c1[0], c1[1]);
         map.bufferSize = 128;
         console.log("rendering tile: tileX: " + options.tileX + ", tileY: " + options.tileY + ", zoom: " + options.zoom);
-        return map.renderFile(options.fileName, { scale: 1 }, function(err) {
+        var im = new mapnik.Image(options.tileWidth, options.tileHeight);
+        return map.render(im, { scale: 1 }, function(err, im) {
           if (err) {
             return callback(err);
           }
-          return callback(null, options);
+
+          im.encode("png", function(err, buffer) {
+            if (err) {
+              return callback(err);
+            }
+            fs.writeFile(options.fileName, buffer, () => {
+              return callback(null, options);
+            });
+          });
         });
       });
+    }, (err) => {
+      console.error("error4", err);
+      return callback(err);
     });
   });
 }, 10);

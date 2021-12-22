@@ -1,1 +1,1 @@
-web: npm start --cachedir /tmp --stylesheet data/stylesheet.xml
+web: npm start -- --cachedir /tmp --stylesheet data/stylesheet.xml --port=$PORT
