@@ -9,7 +9,7 @@ var width = 256;
 var height = 256;
 var name = 'map.png';
 
-var map = new mapnik.Map(width, height);
+var map = new mapnik.Map(width, height, '+init=epsg:3857');
 map.load("./data/stylesheet.xml", {}, function(err, map) {
     map.zoomToBox(14, 49.5, 15, 50);
     var im = new mapnik.Image(width, height);
