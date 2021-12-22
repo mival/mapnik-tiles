@@ -5,13 +5,13 @@ var fs = require("fs");
 mapnik.register_default_fonts();
 mapnik.register_default_input_plugins();
 
-var width = 512;
-var height = 512;
+var width = 256;
+var height = 256;
 var name = 'map.png';
 
 var map = new mapnik.Map(width, height);
 map.load("./data/stylesheet.xml", {}, function(err, map) {
-    map.zoomToBox(1586370.051100000,1639167.294200000,6438156.611100000,6480668.676900000);
+    map.zoomToBox(14, 49.5, 15, 50);
     var im = new mapnik.Image(width, height);
     map.render(im, function(err, im) {
         im.encode("png", function(err, buffer) {
