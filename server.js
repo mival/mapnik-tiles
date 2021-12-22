@@ -138,7 +138,9 @@ var mapRenderQueue = async.queue(function(options, callback) {
                console.log('c1', c1);
 
         map.resize(options.tileWidth, options.tileWidth);
-        map.zoomToBox(c0[0], c0[1], c1[0], c1[1]);
+        // map.zoomToBox(c0[0], c0[1], c1[0], c1[1]);
+        map.zoomToBox(l0[1], l0[0], l1[1], l1[0]);
+
         map.bufferSize = 128;
         console.log("rendering tile: tileX: " + options.tileX + ", tileY: " + options.tileY + ", zoom: " + options.zoom);
         var im = new mapnik.Image(options.tileWidth, options.tileHeight);
